@@ -3,7 +3,7 @@ from test_class import Member
 
 member_list = []
 
-dir_path = "../202444001" # 맥 경로 / 과제 요구 경로 = c:/학번
+dir_path = "./202444001" # 맥 경로 / 과제 요구 경로 = c:/학번
 
 def return_path():
     if not os.path.exists(dir_path):
@@ -127,6 +127,13 @@ while True:
         print_member()
     elif select == 'Q':
         path = return_path()
+        if len(member_list) == 0:
+            print("저장할 회원 정보가 없습니다.")
+        else:
+            with open(path, "w", encoding="utf-8") as f:
+                for member in member_list:
+                    f.write(member.retrun_string() + "\n")
+            print(f"{len(member_list)}명의 회원 정보를 저장하였습니다.")
         break
     
     for member in member_list: # 테스트 코드 (필요한것 아님)
