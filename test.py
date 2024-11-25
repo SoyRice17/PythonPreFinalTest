@@ -1,6 +1,17 @@
+import os
 from test_class import Member
 
 member_list = []
+
+dir_path = "../202444001" # 맥 경로 / 과제 요구 경로 = c:/학번
+
+def return_path():
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    if not os.path.exists(os.path.join(dir_path, "bmilist.txt")):
+        with open(os.path.join(dir_path, "bmilist.txt"), "w", encoding="utf-8") as f:
+            pass
+    return os.path.join(dir_path, "bmilist.txt")
 
 def select_menu():
     print('#' * 20)
@@ -115,7 +126,7 @@ while True:
     elif select == 'D':
         print_member()
     elif select == 'Q':
-        pass
+        path = return_path()
         break
     
     for member in member_list: # 테스트 코드 (필요한것 아님)

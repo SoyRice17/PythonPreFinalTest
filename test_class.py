@@ -9,7 +9,7 @@ class Member:
         return self.weight / (self.height * self.height)
 
     def retrun_string(self):
-        return f"{self.id}|{self.sex}|{self.height}|{self.weight} "
+        return f"{self.id}|{self.sex}|{self.height}|{self.weight}"
     
     def __str__(self): # 테스트 코드 (필요한것 아님)
         return f"{self.id}|{self.sex}|{self.height}|{self.weight} "
