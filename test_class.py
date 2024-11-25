@@ -11,3 +11,6 @@ class Member:
     def retrun_string(self):
         return f"{self.id}|{self.sex}|{self.weight}|{self.height} "
     
+    def __str__(self): # 테스트 코드 (필요한것 아님)
+        return f"{self.id}|{self.sex}|{self.weight}|{self.height} "
+    
