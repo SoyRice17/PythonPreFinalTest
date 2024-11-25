@@ -11,7 +11,7 @@ def select_menu():
     print('Q. 종료 및 회원 정보 저장')
     print('#' * 20)
 
-    menu = int(input('메뉴를 선택하세요: '))
+    menu = input('메뉴를 선택하세요: ').strip().upper()
     return menu
 
 def init_member():
