@@ -1,6 +1,6 @@
 class Member:
-    def __init__(self, name, sex, weight, height):
-        self.name = name
+    def __init__(self, id, sex, weight, height):
+        self.id = id
         self.sex = sex
         self.weight = weight
         self.height = height
@@ -9,5 +9,5 @@ class Member:
         return self.weight / (self.height * self.height)
 
     def retrun_string(self):
-        return f"{self.name}|{self.sex}|{self.weight}|{self.height} "
+        return f"{self.id}|{self.sex}|{self.weight}|{self.height} "
     
