@@ -13,6 +13,25 @@ def return_path():
             pass
     return os.path.join(dir_path, "bmilist.txt")
 
+def read_file():
+    path = return_path()
+    with open(path, "r", encoding="utf-8") as f:
+        if len(member_list) > 0:
+            print("\n기존 회원 정보가 있어 복원하지 않습니다.\n")
+            return
+        for line in f.readlines():
+            if line == "":
+                print("\n저장된 회원 정보가 없습니다.\n")
+                return
+            line = line.strip()
+            if line == "":
+                continue
+            data = line.split(",")
+            member = Member(data[0], data[1], float(data[2]), float(data[3]))
+            member_list.append(member)
+        print(f"\n{len(member_list)}명의 회원 정보를 복원하였습니다.\n")
+        return
+
 def select_menu():
     print('#' * 20)
     print('A. 기존자료복원')
@@ -80,7 +99,7 @@ def edit_member():
                     except Exception:
                         print("\n체중은 숫자만 입력 가능합니다.\n")
                         return
-                print(f"BMI : {member.calc_bmi()}")
+                print(f"BMI : {member.calc_bmi():.2f}")
                 return
             else:
                 print("\n존재하지 않는 아이디입니다.\n")
@@ -99,7 +118,7 @@ def print_member():
         if len(male_members) > 0:
             print("[남성]")
             for i, member in enumerate(male_members):
-                print(f"[{i}] 아이디:{member.id} 신장:{member.height:.2f} 체중:{member.weight:.2f} BMI:{member.calc_bmi():.2f}")
+                print(f"[{i+1}] 아이디:{member.id} 신장:{member.height:.2f} 체중:{member.weight:.2f} BMI:{member.calc_bmi():.2f}")
                 print(f"도표: {'*' * int(member.calc_bmi())}")
                 
         if len(female_members) > 0:
@@ -114,7 +133,7 @@ def print_member():
 while True:
     select = select_menu()
     if select == 'A':
-        pass
+        read_file()
     elif select == 'B':
         member = init_member()
         if member:
@@ -135,8 +154,5 @@ while True:
                     f.write(member.retrun_string() + "\n")
             print(f"{len(member_list)}명의 회원 정보를 저장하였습니다.")
         break
-    
-    for member in member_list: # 테스트 코드 (필요한것 아님)
-        print(member)
     
 print("프로그램을 종료합니다")
