@@ -42,11 +42,17 @@ def select_menu():
     print('#' * 20)
 
     menu = input('메뉴를 선택하세요: ').strip().upper()
+    if menu not in ['A', 'B', 'C', 'D', 'Q']:
+        print("\n잘못된 메뉴를 선택하였습니다.\n")
+        return
     return menu
 
 def init_member():
     print("\n[회원 정보 등록]")
     id = input("아이디: ").strip().upper()
+    if id == "":
+        print("\n아이디는 필수 입력 사항입니다.\n")
+        return
     for member in member_list:
         if member.id == id:
             print("\n이미 존재하는 아이디입니다.\n")
@@ -58,12 +64,18 @@ def init_member():
     height = input("신장(m): ").strip()
     try:
         height = float(height)
+        if height <= 0:
+            print("\n신장은 0보다 커야 합니다.\n")
+            return
     except Exception:
         print("\n신장은 숫자만 입력 가능합니다.\n")
         return
     weight = input("체중(kg): ").strip()
     try:
         weight = float(weight)
+        if weight <= 0:
+            print("\n체중은 0보다 커야 합니다.\n")
+            return
     except Exception:
         print("\n체중은 숫자만 입력 가능합니다.\n")
         return
@@ -77,8 +89,10 @@ def edit_member():
     else:
         print("\n[회원 정보 수정]")
         id = input("아이디: ").strip().upper()
+        found = False
         for member in member_list:
             if member.id == id:
+                found = True
                 print(f"현재 신장 : {member.height:.1f}m")
                 edit_height = input("수정 신장(m): ")
                 if edit_height == "" or edit_height == None:
@@ -101,9 +115,9 @@ def edit_member():
                         return
                 print(f"BMI : {member.calc_bmi():.2f}")
                 return
-            else:
-                print("\n존재하지 않는 아이디입니다.\n")
-                return
+        if not found:
+            print("\n존재하지 않는 아이디입니다.\n")
+            return
     
 def print_member():
     if len(member_list) == 0:
