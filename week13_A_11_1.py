@@ -7,7 +7,7 @@ import os
 import room as rm
 
 time_format = "%Y-%m-%d %H:%M:%S"
-my_path = "c:\\room1_2400001"
+my_path = "/Users/soyrice/Desktop/24_1_2/PythonLearn/problem/week13"#"c:\\room1_2400001"
 my_file = "list.txt"
 full_path = os.path.join(my_path, my_file)
 
@@ -28,6 +28,10 @@ if __name__ == "__main__":
                     stop_time = dt.datetime.strptime(stop_time, time_format)
                 rooms.append(rm.Room1(room, start_time, stop_time))
                 
+    print("\n복원된 정보입니다.\n")
+    for room in rooms:
+        print(room.num, room.start_time, room.stop_time)
+    
     while True:
         room = input("강의실 호수:").strip()
         if not room:
