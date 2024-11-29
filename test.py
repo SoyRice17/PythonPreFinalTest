@@ -5,64 +5,79 @@ member_list = []
 
 dir_path = "./202444001" # 맥 경로 / 과제 요구 경로 = c:/학번
 
-def return_path():
+def return_paths(): # fixit 회원 정보가 없으면 경로 반환 안됨
+    path_list = []
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    if not os.path.exists(os.path.join(dir_path, "bmilist.txt")):
-        with open(os.path.join(dir_path, "bmilist.txt"), "w", encoding="utf-8") as f:
+    for file in os.listdir(dir_path):
+        file_ext = os.path.splitext(file)
+        if len(file_ext) == 2 and file_ext[-1] == ".txt":
+            path_list.append(os.path.join(dir_path, file))
+    return path_list
+
+def make_path(file_name):
+    if not os.path.isdir(dir_path):
+        os.makedirs(dir_path)
+    if not os.path.isfile(os.path.join(dir_path, file_name)):
+        with open(os.path.join(dir_path, file_name), "w", encoding="utf-8") as f:
             pass
-    return os.path.join(dir_path, "bmilist.txt")
+    return os.path.join(dir_path, file_name)
 
 def read_file():
-    path = return_path()
+    paths = return_paths()
     invalid_count = 0
-    valid_count = 0
-    with open(path, "r", encoding="utf-8") as f:
-        if len(member_list) > 0:
-            print("\n기존 회원 정보가 있어 복원하지 않습니다.\n")
-            return
-        for line in f:
-            if line == "":
-                print("\n저장된 회원 정보가 없습니다.\n")
-                return
-            line = line.strip()
-            if line == "":
-                continue
-            data = line.split(",")
-            if len(data) != 4:
-                invalid_count += 1
-                continue
-            id, sex, height, weight = data
-            id = id.strip().upper()
-            sex = sex.strip().upper()
-            if sex != "M" and sex != "F":
-                invalid_count += 1
-                continue
-            try:
-                height = float(height)
-                weight = float(weight)
-            except Exception:
-                invalid_count += 1
-                continue
-            if height <= 0 or weight <= 0:
-                invalid_count += 1
-                continue    
-            member = Member(id, sex, height, weight)
+    height_list = []
+    weight_list = []
+    if len(paths) == 0:
+        print("\n복원할 회원 정보가 없습니다.\n")
+        return
+    if len(member_list) > 0:
+        print("\n기존 회원 정보가 있어 복원하지 않습니다.\n")
+        return
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line == "":
+                    continue
+                data = line.split(",")
+                if len(data) != 2:
+                    invalid_count += 1
+                    continue
+                height, weight = data
+                id = os.path.splitext(path)[0].split("/")[-1].split("_")[0]
+                id = id.strip().upper()
+                sex = os.path.splitext(path)[0].split("/")[-1].split("_")[1]
+                sex = sex.strip().upper()
+                if sex != "M" and sex != "F":
+                    invalid_count += 1
+                    continue
+                try:
+                    height_list.append(float(height))
+                    weight_list.append(float(weight))
+                except Exception:
+                    invalid_count += 1
+                    continue
+                if height_list[-1] <= 0 or weight_list[-1] <= 0:
+                    invalid_count += 1
+                    continue
+            member = Member(id, sex, height_list, weight_list)
             member_list.append(member)
-        print(f"\n{len(member_list)}명의 회원 정보를 복원하였습니다.\n")
-        print(f"유효하지 않은 회원 정보는 {invalid_count}건입니다.\n")
-        return
+            height_list = []
+            weight_list = []
+    print(f"\n{len(member_list)}명의 회원 정보를 복원하였습니다.\n")
+    print(f"유효하지 않은 회원 정보는 {invalid_count}건입니다.\n")
+    return
 
-def save_file(member_list):
-    path = return_path()
+def save_file():
     if len(member_list) == 0:
-        print("저장할 회원 정보가 없습니다.")
-    else:
-        with open(path, "w", encoding="utf-8") as f:
-            for member in member_list:
-                f.write(member.retrun_string() + "\n")
-        print(f"{len(member_list)}명의 회원 정보를 저장하였습니다.")
+        print("\n저장할 회원 정보가 없습니다.\n")
         return
+    for member in member_list:
+        path = make_path(f"{member.id}_{member.sex}.txt")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(member.return_value())
+    print(f"\n{len(member_list)}명의 회원 정보를 저장하였습니다.\n")
     
 def select_menu():
     print('#' * 20)
@@ -111,8 +126,10 @@ def init_member():
     except Exception:
         print("\n체중은 숫자만 입력 가능합니다.\n")
         return
+    height_list = [height]
+    weight_list = [weight]
     
-    return Member(id, sex, height, weight)
+    return Member(id, sex, height_list, weight_list)
 
 def edit_member():
     if len(member_list) == 0:
@@ -125,23 +142,23 @@ def edit_member():
         for member in member_list:
             if member.id == id:
                 found = True
-                print(f"현재 신장 : {member.height:.1f}m")
+                print(f"현재 신장 : {member.height[-1]:.1f}m")
                 edit_height = input("수정 신장(m): ")
                 if edit_height == "" or edit_height == None:
                     pass
                 else:
                     try:
-                        member.height = float(edit_height)
+                        member.height.append(float(edit_height))
                     except Exception:
                         print("\n신장은 숫자만 입력 가능합니다.\n")
                         return
-                print(f"현재 체중 : {member.weight:.1f}kg")
+                print(f"현재 체중 : {member.weight[-1]:.1f}kg")
                 edit_weight = input("수정 체중(kg): ")
                 if edit_weight == "" or edit_weight == None:
                     pass
                 else:
                     try:
-                        member.weight = float(edit_weight)
+                        member.weight.append(float(edit_weight))
                     except Exception:
                         print("\n체중은 숫자만 입력 가능합니다.\n")
                         return
@@ -164,13 +181,13 @@ def print_member():
         if len(male_members) > 0:
             print("[남성]")
             for i, member in enumerate(male_members):
-                print(f"[{i+1}] 아이디:{member.id} 신장:{member.height:.2f} 체중:{member.weight:.2f} BMI:{member.calc_bmi():.2f}")
+                print(f"[{i+1}] 아이디:{member.id} 신장:{member.height[-1]:.2f} 체중:{member.weight[-1]:.2f} BMI:{member.calc_bmi():.2f}")
                 print(f"도표: {'*' * int(member.calc_bmi())}")
                 
         if len(female_members) > 0:
             print("[여성]") 
             for i, member in enumerate(female_members):
-                print(f"[{i+1}] 아이디:{member.id} 신장:{member.height:.2f} 체중:{member.weight:.2f} BMI:{member.calc_bmi():.2f}")
+                print(f"[{i+1}] 아이디:{member.id} 신장:{member.height[-1]:.2f} 체중:{member.weight[-1]:.2f} BMI:{member.calc_bmi():.2f}")
                 print(f"도표: {'*' * int(member.calc_bmi())}")
         
         print("=" * 20)
@@ -191,7 +208,7 @@ while True:
     elif select == 'D':
         print_member()
     elif select == 'Q':
-        save_file(member_list)
+        save_file()
         break
     
 print("프로그램을 종료합니다")
