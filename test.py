@@ -15,11 +15,13 @@ def return_path():
 
 def read_file():
     path = return_path()
+    invalid_count = 0
+    valid_count = 0
     with open(path, "r", encoding="utf-8") as f:
         if len(member_list) > 0:
             print("\n기존 회원 정보가 있어 복원하지 않습니다.\n")
             return
-        for line in f.readlines():
+        for line in f:
             if line == "":
                 print("\n저장된 회원 정보가 없습니다.\n")
                 return
@@ -27,9 +29,28 @@ def read_file():
             if line == "":
                 continue
             data = line.split(",")
-            member = Member(data[0], data[1], float(data[2]), float(data[3]))
+            if len(data) != 4:
+                invalid_count += 1
+                continue
+            id, sex, height, weight = data
+            id = id.strip().upper()
+            sex = sex.strip().upper()
+            if sex != "M" and sex != "F":
+                invalid_count += 1
+                continue
+            try:
+                height = float(height)
+                weight = float(weight)
+            except Exception:
+                invalid_count += 1
+                continue
+            if height <= 0 or weight <= 0:
+                invalid_count += 1
+                continue    
+            member = Member(id, sex, height, weight)
             member_list.append(member)
         print(f"\n{len(member_list)}명의 회원 정보를 복원하였습니다.\n")
+        print(f"유효하지 않은 회원 정보는 {invalid_count}건입니다.\n")
         return
 
 def select_menu():
