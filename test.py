@@ -53,6 +53,17 @@ def read_file():
         print(f"유효하지 않은 회원 정보는 {invalid_count}건입니다.\n")
         return
 
+def save_file(member_list):
+    path = return_path()
+    if len(member_list) == 0:
+        print("저장할 회원 정보가 없습니다.")
+    else:
+        with open(path, "w", encoding="utf-8") as f:
+            for member in member_list:
+                f.write(member.retrun_string() + "\n")
+        print(f"{len(member_list)}명의 회원 정보를 저장하였습니다.")
+        return
+    
 def select_menu():
     print('#' * 20)
     print('A. 기존자료복원')
@@ -180,14 +191,7 @@ while True:
     elif select == 'D':
         print_member()
     elif select == 'Q':
-        path = return_path()
-        if len(member_list) == 0:
-            print("저장할 회원 정보가 없습니다.")
-        else:
-            with open(path, "w", encoding="utf-8") as f:
-                for member in member_list:
-                    f.write(member.retrun_string() + "\n")
-            print(f"{len(member_list)}명의 회원 정보를 저장하였습니다.")
+        save_file(member_list)
         break
     
 print("프로그램을 종료합니다")
